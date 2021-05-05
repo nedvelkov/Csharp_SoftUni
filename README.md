@@ -1,2 +1,3 @@
 # Csharp_SoftUni
-Problem solving c# study in SoftUni
+This repository contains all task I have completed in SoftUni as student.
+

@@ -1,0 +1,16 @@
+CREATE TABLE OrderItems
+(
+	OrderID int NOT NULL,
+	
+	ItemID INT NOT NULL,
+
+	CONSTRAINT PK_Order_Item PRIMARY KEY(OrderID,ItemID),
+
+	CONSTRAINT FK_OrderID_Orders FOREIGN KEY (OrderID)
+    REFERENCES Orders(OrderID),
+
+	CONSTRAINT FK_ItemID_Items FOREIGN KEY (ItemID)
+    REFERENCES Items(ItemID)
+
+
+)
