@@ -9,5 +9,6 @@
         public bool EmailAvailable(string email);
 
         public string UserId(string username, string password);
+
     }
 }

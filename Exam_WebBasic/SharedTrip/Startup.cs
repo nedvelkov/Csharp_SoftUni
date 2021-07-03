@@ -24,6 +24,7 @@
                     .Add<IPasswordHasher,PasswordHasher>()
                     .Add<IUserServices,UserServices>()
                     .Add<ITripService,TripService>()
+                    .Add<IUserTripService,UserTripService>()
                     .Add<ApplicationDbContext>())
                     .WithConfiguration<ApplicationDbContext>(context => context
                     .Database.Migrate())

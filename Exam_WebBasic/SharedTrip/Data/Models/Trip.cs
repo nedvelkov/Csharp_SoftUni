@@ -19,7 +19,7 @@
         public DateTime DepartureTime { get; init; }
 
         [Required]
-        public int Seats { get; init; }
+        public int Seats { get; set; }
 
         [Required]
         public string Description { get; init; }

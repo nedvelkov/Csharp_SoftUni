@@ -17,16 +17,16 @@
 
         private readonly ApplicationDbContext data;
         private readonly IValidator validator;
-        private readonly IPasswordHasher hasher;
+        private readonly IUserTripService userTripService;
         private readonly ITripService tripService;
         public TripsController(ApplicationDbContext data,
                                 IValidator validator,
-                                IPasswordHasher hasher,
+                                IUserTripService userTripService,
                                 ITripService tripService)
         {
             this.data = data;
             this.validator = validator;
-            this.hasher = hasher;
+            this.userTripService = userTripService;
             this.tripService = tripService;
         }
             [Authorize]
@@ -40,7 +40,7 @@
                                 StartPoint = x.StartPoint,
                                 EndPoint = x.EndPoint,
                                 DepartureTime = x.DepartureTime.ToString("dd.MM.yyyy HH:mm"),
-                                Seats = x.Seats
+                                Seats = x.Seats-x.UserTrips.Count+1
                             }).ToList();
             return View(viewModel);
         }
@@ -92,6 +92,7 @@
                 return Redirect("/Trips/All");
             }
 
+
             var tripViewModel = this.data
                                 .Trips
                                 .Where(x => x.Id == tripId)
@@ -102,7 +103,7 @@
                                     EndPoint = x.EndPoint,
                                     DepartureTime = x.DepartureTime.ToString("dd.MM.yyyy HH:mm"),
                                     ImagePath = x.ImagePath,
-                                    Seats = x.Seats,
+                                    Seats = x.Seats-x.UserTrips.Count+1,
                                     Description = x.Description
                                 }).First();
 
@@ -113,10 +114,16 @@
         {
             var userId = this.User.Id;
             var user = this.data.Users.First(x => x.Id == userId);
-            ;
+            
             if (this.data.UserTrips.Any(x => x.TripId == tripId && x.UserId==userId))
             {
                 return Redirect($"/Trips/Details?tripId={tripId}");
+            }
+
+            if (this.userTripService.FreeSeatTrip(userId, tripId) <= 0)
+            {
+                return Redirect("/Trips/All");
+
             }
             var trip = this.data.Trips.First(x => x.Id == tripId);
 
@@ -126,6 +133,10 @@
                                     .Users
                                     .Single(x => x.Id == this.User.Id);
             userAsQueary.UserTrips.Add(userTrip);
+
+            var tripAsQueary = this.data
+                        .Trips
+                        .Single(x => x.Id == tripId);
 
             this.data.SaveChanges();
 
